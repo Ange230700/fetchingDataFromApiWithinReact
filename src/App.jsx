@@ -1,45 +1,47 @@
-import './App.css'
-import DisplayEmployee from './components/DisplayEmployee';
-import axios from 'axios';
-import { useState } from 'react';
+import UserCard from "./components/UserCard";
+import "./App.css";
+import { useState } from "react";
+import axios from "axios";
 
-
-const sampleEmployee = {
-  gender: "male",
-  name: {
-    title: "mr",
-    first: "Mathys",
-    last: "aubert",
-  },
-  location: {
-    street: {
-      number: 4840,
-      name: "rue de la mairie",
-    },
-    city: "Perpignan",
-    postcode: "90208",
-  },
-  email: "mathys.aubert@example.com",
-  picture: {
-    medium: "https://randomuser.me/api/portraits/med/men/40.jpg",
-  },
+const user = {
+  firstName: "John",
+  lastName: "Doe",
+  image: "https://randomuser.me/api/portraits/men/75.jpg",
+  email: "john.doe@random.com",
 };
 
 function App() {
-  const [employee, setEmployee] = useState(sampleEmployee);
+  const [
+    initialUserProfile, 
+    setInitialUserProfile
+  ] = useState(user);
   const getEmployee = () => {
-    // Send the request
-    axios.get('https://randomuser.me/api?nat=fr')
-      // Use this data to update the state
-      .then(response => setEmployee(response.data.results[0]))
+    axios
+      .get("https://randomuser.me/api/")
+      .then((response) => {
+        const employee = response.data.results[0];
+        const newEmployee = {
+          firstName: employee.name.first,
+          lastName: employee.name.last,
+          image: employee.picture.large,
+          email: employee.email,
+        };
+        setInitialUserProfile(newEmployee);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
-  
   return (
-    <div className='App'> 
-      <DisplayEmployee employee={employee}/>
-      <button type="button" onClick={getEmployee}>Get employee</button>
+    <div className="app">
+      <UserCard
+        firstName={initialUserProfile.firstName}
+        lastName={initialUserProfile.lastName}
+        image={initialUserProfile.image}
+        email={initialUserProfile.email}
+      />
+      <button onClick={getEmployee}>Get Employee</button>
     </div>
-  )
+  );
 }
-
-export default App
+export default App;
